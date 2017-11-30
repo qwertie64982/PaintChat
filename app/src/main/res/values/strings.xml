@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">PaintChat</string>
 
-    <string name="filename">image.png</string>
+    <string name="last_image_filename">last.png</string>
 
     <string name="save">Save</string>
     <string name="clear">Clear</string>

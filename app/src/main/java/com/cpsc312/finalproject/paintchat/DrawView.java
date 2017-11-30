@@ -138,10 +138,11 @@ public class DrawView extends AppCompatImageView {
         return true;
     }
 
-    public boolean saveToFile() {
+    // use for later for keeping track of the last image
+    public boolean saveLastImage() {
         try {
             // Create file
-            File file = new File(getContext().getFilesDir(), getResources().getString(R.string.filename)); // TODO: Make unique filenames
+            File file = new File(getContext().getFilesDir(), getResources().getString(R.string.last_image_filename));
             file.createNewFile();
 
             // Convert bitmap to byte array
@@ -161,6 +162,11 @@ public class DrawView extends AppCompatImageView {
 
             return false;
         }
+    }
+
+    public boolean saveToFile() {
+        // TODO: Get external storage permissions, and save there with unique filenames
+        return true;
     }
 
     public void clear() {
