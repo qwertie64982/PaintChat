@@ -1,15 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:columnCount="5"
     tools:context="com.cpsc312.finalproject.paintchat.DrawActivity">
+
+    <ImageView
+        android:id="@+id/colorRed"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="red"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/red" />
+
+    <ImageView
+        android:id="@+id/colorOrange"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="orange"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/orange" />
+
+    <ImageView
+        android:id="@+id/colorYellow"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="yellow"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/yellow" />
+
+    <ImageView
+        android:id="@+id/colorGreen"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="green"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/green" />
+
+    <ImageView
+        android:id="@+id/colorBlue"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="blue"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/blue" />
+
+    <ImageView
+        android:id="@+id/colorPurple"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="purple"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/purple" />
+
+    <ImageView
+        android:id="@+id/colorPink"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="pink"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/pink" />
+
+    <ImageView
+        android:id="@+id/colorBrown"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="brown"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/brown" />
+
+    <ImageView
+        android:id="@+id/colorBlack"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="black"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/black" />
+
+    <ImageView
+        android:id="@+id/colorGray"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="gray"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/gray" />
 
     <com.cpsc312.finalproject.paintchat.DrawView
         android:id="@+id/drawView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@drawable/rainbow" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="fill_horizontal"
+        android:src="@drawable/rainbow"
+        app:layout_columnSpan="5"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1" />
 
-</LinearLayout>
+</android.support.v7.widget.GridLayout>

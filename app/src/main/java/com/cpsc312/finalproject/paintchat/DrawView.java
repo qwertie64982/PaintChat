@@ -6,9 +6,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.os.Environment;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
@@ -16,13 +18,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+import static android.content.ContentValues.TAG;
+
+// Would not have been possible to start this without:
+// https://android.jlelse.eu/learn-to-create-a-paint-application-for-android-5b16968063f8
 
 public class DrawView extends AppCompatImageView {
 
-    private static final int DEFAULT_COLOR = Color.BLACK;
-    private static final int DEFAULT_BG_COLOR = Color.WHITE;
-//    private static final int DEFAULT_BG_COLOR = Color.TRANSPARENT;
+    private  final int DEFAULT_COLOR = getResources().getColor(R.color.black);
+    private  final int DEFAULT_BG_COLOR = getResources().getColor(R.color.white);
     private static final float TOUCH_TOLERANCE = 4;
 
     private Paint paint;
@@ -138,6 +148,10 @@ public class DrawView extends AppCompatImageView {
         return true;
     }
 
+    public void setCurrentColor(int currentColor) {
+        this.currentColor = currentColor;
+    }
+
     // use for later for keeping track of the last image
     public boolean saveLastImage() {
         try {
@@ -165,8 +179,48 @@ public class DrawView extends AppCompatImageView {
     }
 
     public boolean saveToFile() {
-        // TODO: Get external storage permissions, and save there with unique filenames
-        return true;
+        if (!isExternalStorageWritable()) {
+            findViewById(R.id.saveMenuItem).setEnabled(false);
+        }
+
+        try {
+            // Create file
+            // DIRECTORY_PICTURES/PaintChat/
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                    + getResources().getString(R.string.app_name) + "/";
+
+            // yyyy-MM-DD-HHmmss.png
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS");
+            String filename = df.format(calendar.getTime()) + ".png";
+
+            File file = new File(Environment.getExternalStoragePublicDirectory(path), filename);
+            if (!file.mkdirs()) { // Check to make sure it made a directory within Pictures
+                // TODO: this is false for some reason but I'm not going to debug this until later
+                Log.e(TAG, "saveToFile: Directory not created");
+            }
+            file.createNewFile();
+
+            // Convert bitmap to byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+            byte[] bitmapData = bos.toByteArray();
+
+            // Convert byte array to file
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapData);
+            fos.flush();
+            fos.close();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isExternalStorageWritable() {
+        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
     public void clear() {

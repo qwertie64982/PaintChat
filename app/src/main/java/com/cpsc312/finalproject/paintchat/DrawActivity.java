@@ -7,12 +7,12 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 public class DrawActivity extends AppCompatActivity {
 
     // max todo
-    // colors
     // undo
     // erase
     // external storage
@@ -50,6 +50,46 @@ public class DrawActivity extends AppCompatActivity {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void onColorClicked(View view) {
+        String color = view.getTag().toString();
+
+        switch (color) {
+            case "red":
+                drawView.setCurrentColor(getResources().getColor(R.color.red));
+                break;
+            case "orange":
+                drawView.setCurrentColor(getResources().getColor(R.color.orange));
+                break;
+            case "yellow":
+                drawView.setCurrentColor(getResources().getColor(R.color.yellow));
+                break;
+            case "green":
+                drawView.setCurrentColor(getResources().getColor(R.color.green));
+                break;
+            case "blue":
+                drawView.setCurrentColor(getResources().getColor(R.color.blue));
+                break;
+            case "purple":
+                drawView.setCurrentColor(getResources().getColor(R.color.purple));
+                break;
+            case "pink":
+                drawView.setCurrentColor(getResources().getColor(R.color.pink));
+                break;
+            case "brown":
+                drawView.setCurrentColor(getResources().getColor(R.color.brown));
+                break;
+            case "black":
+                drawView.setCurrentColor(getResources().getColor(R.color.black));
+                break;
+            case "gray":
+                drawView.setCurrentColor(getResources().getColor(R.color.gray));
+                break;
+            default:
+                drawView.setCurrentColor(getResources().getColor(R.color.black));
+                break;
         }
     }
 
