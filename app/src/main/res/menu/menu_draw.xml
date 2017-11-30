@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/saveMenuItem"
+        android:title="@string/save"
+        android:icon="@android:drawable/ic_menu_save"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/clearMenuItem"
         android:title="@string/clear"
         android:icon="@android:drawable/ic_menu_delete"

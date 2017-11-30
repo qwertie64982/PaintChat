@@ -9,6 +9,7 @@
     <com.cpsc312.finalproject.paintchat.DrawView
         android:id="@+id/drawView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:src="@drawable/rainbow" />
 
 </LinearLayout>

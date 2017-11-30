@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">PaintChat</string>
 
+    <string name="filename">image.png</string>
+
+    <string name="save">Save</string>
     <string name="clear">Clear</string>
 </resources>

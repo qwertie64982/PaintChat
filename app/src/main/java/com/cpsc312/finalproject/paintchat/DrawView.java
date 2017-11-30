@@ -10,13 +10,19 @@ import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class DrawView extends AppCompatImageView {
 
     private static final int DEFAULT_COLOR = Color.BLACK;
     private static final int DEFAULT_BG_COLOR = Color.WHITE;
+//    private static final int DEFAULT_BG_COLOR = Color.TRANSPARENT;
     private static final float TOUCH_TOLERANCE = 4;
 
     private Paint paint;
@@ -130,6 +136,31 @@ public class DrawView extends AppCompatImageView {
                 break;
         }
         return true;
+    }
+
+    public boolean saveToFile() {
+        try {
+            // Create file
+            File file = new File(getContext().getFilesDir(), getResources().getString(R.string.filename)); // TODO: Make unique filenames
+            file.createNewFile();
+
+            // Convert bitmap to byte array
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0, bos);
+            byte[] bitmapData = bos.toByteArray();
+
+            // Convert byte array to file
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapData);
+            fos.flush();
+            fos.close();
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            return false;
+        }
     }
 
     public void clear() {
