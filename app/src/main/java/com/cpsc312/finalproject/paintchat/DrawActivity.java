@@ -1,6 +1,5 @@
 package com.cpsc312.finalproject.paintchat;
 
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +10,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 public class DrawActivity extends AppCompatActivity {
+
+    // max todo
+    // colors
+    // undo
+    // erase
+    // external storage
 
     private DrawView drawView;
 
