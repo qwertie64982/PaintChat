@@ -19,10 +19,8 @@ public class DrawActivity extends AppCompatActivity {
 
     private static final int EXTERNAL_STORAGE_REQUEST_CODE = 1;
 
-    // max todo
-    // undo
-    // erase
-    // external storage
+    // TODO: put an undo function where the filler icon is
+    // TODO: put a slider below the colors to change the brush size
 
     private DrawView drawView;
 
@@ -116,6 +114,9 @@ public class DrawActivity extends AppCompatActivity {
                 break;
             case "gray":
                 drawView.setCurrentColor(getResources().getColor(R.color.gray));
+                break;
+            case "white":
+                drawView.setCurrentColor(getResources().getColor(R.color.white));
                 break;
             default:
                 drawView.setCurrentColor(getResources().getColor(R.color.black));

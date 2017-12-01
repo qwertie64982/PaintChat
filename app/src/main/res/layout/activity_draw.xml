@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:columnCount="5"
+    android:background="@color/colorBackground"
+    app:columnCount="6"
     tools:context="com.cpsc312.finalproject.paintchat.DrawActivity">
 
     <ImageView
@@ -117,13 +118,33 @@
         app:layout_columnWeight="1"
         app:srcCompat="@color/gray" />
 
+    <ImageView
+        android:id="@+id/colorWhite"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:onClick="onColorClicked"
+        android:src="@null"
+        android:tag="white"
+        app:layout_columnWeight="1"
+        app:srcCompat="@color/white" />
+
+    <ImageView
+        android:id="@+id/filler"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:src="@null"
+        android:tag="filler"
+        android:visibility="invisible"
+        app:layout_columnWeight="1" />
+
     <com.cpsc312.finalproject.paintchat.DrawView
         android:id="@+id/drawView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:gravity="fill_horizontal"
-        android:src="@drawable/rainbow"
-        app:layout_columnSpan="5"
+        app:layout_columnSpan="6"
         app:layout_columnWeight="1"
         app:layout_rowWeight="1" />
 

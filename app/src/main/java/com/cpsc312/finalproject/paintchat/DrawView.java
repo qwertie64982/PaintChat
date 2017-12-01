@@ -34,6 +34,8 @@ import static android.content.ContentValues.TAG;
 
 public class DrawView extends AppCompatImageView {
 
+    // TODO: Instead of using a solid background color, make it a texture
+
     private  final int DEFAULT_COLOR = getResources().getColor(R.color.black);
     private  final int DEFAULT_BG_COLOR = getResources().getColor(R.color.white);
     private static final float TOUCH_TOLERANCE = 4;
