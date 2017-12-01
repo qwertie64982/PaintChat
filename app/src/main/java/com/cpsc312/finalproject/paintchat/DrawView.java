@@ -217,20 +217,15 @@ public class DrawView extends AppCompatImageView {
     }
 
     private void ensureParentDirectory() {
-        try {
-            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                    + "/" + getResources().getString(R.string.app_name) + "/";
-            File file = new File(path);
-            file.createNewFile();
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                + "/" + getResources().getString(R.string.app_name) + "/";
+        File file = new File(path);
+        file.mkdir();
 
-            Log.d(TAG, "ensureParentDirectory: Ensuring directory " + path + " exists");
+        Log.d(TAG, "ensureParentDirectory: Ensuring directory " + path + " exists");
 
-            if (!file.mkdirs()) { // Check to make sure it made a directory within Pictures
-                Log.e(TAG, "ensureParentDirectory: Directory not created");
-                // TODO: figure out java.io.IOException: Not a directory
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!file.mkdirs()) { // Check to make sure it made a directory within Pictures
+            Log.e(TAG, "ensureParentDirectory: Directory not created");
         }
     }
 

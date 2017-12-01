@@ -38,7 +38,7 @@ public class DrawActivity extends AppCompatActivity {
 
         if (!isExternalStorageWritable()) {
             findViewById(R.id.saveMenuItem).setEnabled(false);
-            // TODO: warn the user that files cannot be saved
+            Toast.makeText(this, getResources().getString(R.string.no_save_permissions), Toast.LENGTH_SHORT).show();
         }
     }
 
