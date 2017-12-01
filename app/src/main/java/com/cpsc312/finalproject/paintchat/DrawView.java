@@ -1,5 +1,6 @@
 package com.cpsc312.finalproject.paintchat;
 
+import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -7,6 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -178,27 +181,21 @@ public class DrawView extends AppCompatImageView {
         }
     }
 
-    public boolean saveToFile() {
-        if (!isExternalStorageWritable()) {
-            findViewById(R.id.saveMenuItem).setEnabled(false);
-        }
+    public boolean saveToFile() { // Is it bad to save a file from a View?
+        ensureParentDirectory();
 
         try {
             // Create file
-            // DIRECTORY_PICTURES/PaintChat/
+            // DIRECTORY_PICTURES/PaintChat/yyyy-MM-DD-HHmmss.png
             String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                    + getResources().getString(R.string.app_name) + "/";
-
-            // yyyy-MM-DD-HHmmss.png
+                    + "/" + getResources().getString(R.string.app_name) + "/";
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HHmmssSSS");
             String filename = df.format(calendar.getTime()) + ".png";
 
-            File file = new File(Environment.getExternalStoragePublicDirectory(path), filename);
-            if (!file.mkdirs()) { // Check to make sure it made a directory within Pictures
-                // TODO: this is false for some reason but I'm not going to debug this until later
-                Log.e(TAG, "saveToFile: Directory not created");
-            }
+            Log.d(TAG, "saveToFile: " + path + filename);
+
+            File file = new File(path, filename);
             file.createNewFile();
 
             // Convert bitmap to byte array
@@ -219,8 +216,22 @@ public class DrawView extends AppCompatImageView {
         }
     }
 
-    public boolean isExternalStorageWritable() {
-        return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+    private void ensureParentDirectory() {
+        try {
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                    + "/" + getResources().getString(R.string.app_name) + "/";
+            File file = new File(path);
+            file.createNewFile();
+
+            Log.d(TAG, "ensureParentDirectory: Ensuring directory " + path + " exists");
+
+            if (!file.mkdirs()) { // Check to make sure it made a directory within Pictures
+                Log.e(TAG, "ensureParentDirectory: Directory not created");
+                // TODO: figure out java.io.IOException: Not a directory
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void clear() {

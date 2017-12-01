@@ -5,4 +5,6 @@
 
     <string name="save">Save</string>
     <string name="clear">Clear</string>
+
+    <string name="no_save_permissions">This app does not have permission to save images.</string>
 </resources>
