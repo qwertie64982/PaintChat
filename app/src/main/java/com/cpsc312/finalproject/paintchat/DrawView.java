@@ -1,31 +1,24 @@
 package com.cpsc312.finalproject.paintchat;
 
-import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import static android.content.ContentValues.TAG;
 
@@ -46,7 +39,7 @@ public class DrawView extends AppCompatImageView {
     private Paint bitmapPaint = new Paint(Paint.DITHER_FLAG);
     private ArrayList<FingerPath> paths = new ArrayList<>(); // list of FingerPaths the user made
 
-    private static int brushSize = 20;
+    private int brushSize = 20;
     private int currentColor;
     private int backgroundColor = DEFAULT_BG_COLOR;
     private int strokeWidth;
@@ -183,7 +176,16 @@ public class DrawView extends AppCompatImageView {
         }
     }
 
-    public boolean saveToFile() { // Is it bad to save a file from a View?
+    public int getBrushSize() {
+        return brushSize;
+    }
+
+    public void setBrushSize(int brushSize) {
+        this.brushSize = brushSize;
+        strokeWidth = this.brushSize;
+    }
+
+    public boolean saveToFile() { // Is it bad to save a file from a View? Maybe, who knows.
         ensureParentDirectory();
 
         try {

@@ -13,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class DrawActivity extends AppCompatActivity {
@@ -20,7 +22,6 @@ public class DrawActivity extends AppCompatActivity {
     private static final int EXTERNAL_STORAGE_REQUEST_CODE = 1;
 
     // TODO: put an undo function where the filler icon is
-    // TODO: put a slider below the colors to change the brush size
 
     private DrawView drawView;
 
@@ -38,6 +39,27 @@ public class DrawActivity extends AppCompatActivity {
             findViewById(R.id.saveMenuItem).setEnabled(false);
             Toast.makeText(this, getResources().getString(R.string.no_save_permissions), Toast.LENGTH_SHORT).show();
         }
+
+        SeekBar brushSizeSeekBar = (SeekBar) findViewById(R.id.brushSizeSeekBar);
+        final TextView brushSizeTextView = (TextView) findViewById(R.id.brushSizeTextView);
+        brushSizeTextView.setText(Integer.toString(drawView.getBrushSize()));
+        brushSizeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                drawView.setBrushSize(i);
+                brushSizeTextView.setText(Integer.toString(i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override

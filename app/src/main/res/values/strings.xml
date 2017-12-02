@@ -7,4 +7,19 @@
     <string name="clear">Clear</string>
 
     <string name="no_save_permissions">This app does not have permission to save images.</string>
+
+    <!-- Content descriptions -->
+    <string name="red">red</string>
+    <string name="orange">orange</string>
+    <string name="yellow">yellow</string>
+    <string name="green">green</string>
+    <string name="blue">blue</string>
+    <string name="purple">purple</string>
+    <string name="pink">pink</string>
+    <string name="brown">brown</string>
+    <string name="black">black</string>
+    <string name="gray">gray</string>
+    <string name="white">white</string>
+    <string name="filler">filler</string>
+    <string name="brush_size_slider">brush size slider</string>
 </resources>
