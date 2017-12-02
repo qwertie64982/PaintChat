@@ -21,8 +21,6 @@ public class DrawActivity extends AppCompatActivity {
 
     private static final int EXTERNAL_STORAGE_REQUEST_CODE = 1;
 
-    // TODO: put an undo function where the filler icon is
-
     private DrawView drawView;
 
     @Override
@@ -81,6 +79,14 @@ public class DrawActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void onClickUndo(View view) {
+        drawView.undo();
+    }
+
+    public void onClickRedo(View view) {
+        drawView.redo();
     }
 
     private boolean saveToFile() {

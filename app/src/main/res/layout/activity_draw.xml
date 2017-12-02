@@ -141,14 +141,14 @@
         app:srcCompat="@color/white" />
 
     <ImageView
-        android:id="@+id/filler"
+        android:id="@+id/undoButton"
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_margin="5dp"
-        android:contentDescription="@string/filler"
-        android:src="@null"
+        android:contentDescription="@string/undo"
+        android:onClick="onClickUndo"
+        android:src="@drawable/ic_undo_black_24dp"
         android:tag="filler"
-        android:visibility="invisible"
         app:layout_columnWeight="1" />
 
     <SeekBar
@@ -159,7 +159,7 @@
         android:gravity="fill_horizontal"
         android:max="50"
         android:progress="20"
-        app:layout_columnSpan="5"
+        app:layout_columnSpan="4"
         app:layout_columnWeight="1" />
 
     <TextView
@@ -170,6 +170,17 @@
         android:layout_marginStart="5dp"
         android:textAlignment="center"
         android:textSize="18sp"
+        app:layout_columnWeight="1" />
+
+    <ImageView
+        android:id="@+id/redoButton"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_margin="5dp"
+        android:contentDescription="@string/redo"
+        android:onClick="onClickRedo"
+        android:src="@drawable/ic_redo_black_24dp"
+        android:tag="filler"
         app:layout_columnWeight="1" />
 
     <com.cpsc312.finalproject.paintchat.DrawView

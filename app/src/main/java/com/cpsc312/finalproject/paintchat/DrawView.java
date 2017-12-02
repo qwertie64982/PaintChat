@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,6 +39,7 @@ public class DrawView extends AppCompatImageView {
     private Canvas canvas;
     private Paint bitmapPaint = new Paint(Paint.DITHER_FLAG);
     private ArrayList<FingerPath> paths = new ArrayList<>(); // list of FingerPaths the user made
+    private ArrayList<FingerPath> undonePaths = new ArrayList<>(); // list of undos (in case of redo)
 
     private int brushSize = 20;
     private int currentColor;
@@ -146,6 +148,24 @@ public class DrawView extends AppCompatImageView {
         return true;
     }
 
+    public void undo() {
+        if (paths.size() > 0) {
+            undonePaths.add(paths.remove(paths.size() - 1));
+            invalidate();
+        } else {
+            Toast.makeText(getContext(), getResources().getString(R.string.cannot_undo), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void redo() {
+        if (undonePaths.size() > 0) {
+            paths.add(undonePaths.remove(undonePaths.size() - 1));
+            invalidate();
+        } else {
+            Toast.makeText(getContext(), getResources().getString(R.string.cannot_redo), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public void setCurrentColor(int currentColor) {
         this.currentColor = currentColor;
     }
@@ -229,7 +249,7 @@ public class DrawView extends AppCompatImageView {
         Log.d(TAG, "ensureParentDirectory: Ensuring directory " + path + " exists");
 
         if (!file.mkdirs()) { // Check to make sure it made a directory within Pictures
-            Log.e(TAG, "ensureParentDirectory: Directory not created");
+            Log.d(TAG, "ensureParentDirectory: Created new directory");
         }
     }
 

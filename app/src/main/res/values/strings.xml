@@ -1,12 +1,19 @@
 <resources>
+    <!-- App -->
     <string name="app_name">PaintChat</string>
 
+    <!-- FIlesystem -->
     <string name="last_image_filename">last.png</string>
 
+    <!-- Menu items -->
     <string name="save">Save</string>
     <string name="clear">Clear</string>
 
-    <string name="no_save_permissions">This app does not have permission to save images.</string>
+    <!-- Error messages -->
+    <string name="cannot_access_external">This app cannot access your external storage</string>
+    <string name="no_save_permissions">This app does not have permission to save images</string>
+    <string name="cannot_undo">Nothing to undo</string>
+    <string name="cannot_redo">Nothing to redo</string>
 
     <!-- Content descriptions -->
     <string name="red">red</string>
@@ -21,5 +28,7 @@
     <string name="gray">gray</string>
     <string name="white">white</string>
     <string name="filler">filler</string>
+    <string name="undo">undo</string>
+    <string name="redo">redo</string>
     <string name="brush_size_slider">brush size slider</string>
 </resources>
