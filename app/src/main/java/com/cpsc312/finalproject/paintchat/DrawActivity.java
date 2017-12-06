@@ -1,11 +1,14 @@
 package com.cpsc312.finalproject.paintchat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -16,6 +19,8 @@ import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
 
 public class DrawActivity extends AppCompatActivity {
 
@@ -71,6 +76,17 @@ public class DrawActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         switch(itemId) {
+            case R.id.shareMenuItem:
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setData(Uri.parse("mmsto:"));
+                intent.setType("image/*");
+                drawView.saveLastImage(); // ensure the file exists
+                intent.putExtra("subject", "New PaintChat Message");
+                File file = new File(getFilesDir(), getResources().getString(R.string.last_image_filename));
+                Uri uri = FileProvider.getUriForFile(DrawActivity.this, "com.cpsc312.finalproject.paintchat.fileprovider", file);
+                intent.putExtra(Intent.EXTRA_STREAM, uri);
+                startActivity(intent);
+                return true;
             case R.id.saveMenuItem:
                 return saveToFile();
             case R.id.clearMenuItem:
