@@ -256,6 +256,7 @@ public class DrawView extends AppCompatImageView {
     public void clear() {
         backgroundColor = DEFAULT_BG_COLOR;
         paths.clear();
+        undonePaths.clear();
         invalidate();
     }
 }
