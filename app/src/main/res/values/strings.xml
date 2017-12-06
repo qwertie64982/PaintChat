@@ -6,6 +6,7 @@
     <string name="last_image_filename">last.png</string>
 
     <!-- Menu items -->
+    <string name="share">Share</string>
     <string name="save">Save</string>
     <string name="clear">Clear</string>
 
