@@ -34,9 +34,14 @@ public class DrawActivity extends AppCompatActivity {
         setContentView(R.layout.activity_draw);
 
         drawView = (DrawView) findViewById(R.id.drawView);
-        DisplayMetrics metrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        drawView.init(metrics);
+        drawView.post(new Runnable() {
+            @Override
+            public void run() {
+                int height = drawView.getHeight();
+                int width = drawView.getWidth();
+                drawView.init(height, width);
+            }
+        });
 
         if (!isExternalStorageWritable()) {
             findViewById(R.id.saveMenuItem).setEnabled(false);

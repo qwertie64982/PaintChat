@@ -66,10 +66,7 @@ public class DrawView extends AppCompatImageView {
         paint.setAlpha(0xff); // the alpha channel for all colors should be 100% (not transparent)
     }
 
-    public void init(DisplayMetrics metrics) {
-        int height = metrics.heightPixels;
-        int width = metrics.widthPixels;
-
+    public void init(int height, int width) {
         bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888); // each pixel stored in 4B
         canvas = new Canvas(bitmap);
 
