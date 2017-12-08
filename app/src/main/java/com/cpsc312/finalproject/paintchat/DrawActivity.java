@@ -11,7 +11,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +29,10 @@ public class DrawActivity extends AppCompatActivity {
 
     private DrawView drawView;
 
+    /**
+     * onCreate
+     * @param savedInstanceState savedInstanceState Bundle (unused)
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +40,10 @@ public class DrawActivity extends AppCompatActivity {
 
         drawView = (DrawView) findViewById(R.id.drawView);
         drawView.post(new Runnable() {
+            /**
+             * Makes sure that the height and width are given to the Bitmap only once the layout is created
+             * Without using a Runnable, they would be 0 at this point
+             */
             @Override
             public void run() {
                 int height = drawView.getHeight();
@@ -57,24 +64,39 @@ public class DrawActivity extends AppCompatActivity {
         final TextView brushSizeTextView = (TextView) findViewById(R.id.brushSizeTextView);
         brushSizeTextView.setText(Integer.toString(drawView.getBrushSize()));
         brushSizeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            /**
+             * Runs whenever the SeekBar is changed
+             * @param seekBar SeekBar View
+             * @param i new value of the SeekBar
+             * @param b whether or not the change came from the user
+             */
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 drawView.setBrushSize(i);
                 brushSizeTextView.setText(Integer.toString(i));
             }
 
+            /**
+             * Runs whenever the SeekBar is first pressed
+             * @param seekBar SeekBar View
+             */
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
-            }
-
+            /**
+             * Runs whenever the SeekBar is released
+             * @param seekBar SeekBar View
+             */
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
     }
 
+    /**
+     * Initializes the options menu
+     * @param menu Menu to be displayed
+     * @return true if the menu should be displayed, false otherwise
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
@@ -82,6 +104,11 @@ public class DrawActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Runs when a menu item is selected
+     * @param item which menu item was selected
+     * @return true if the event was handled, false otherwise
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
@@ -107,14 +134,26 @@ public class DrawActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Runs when the user clicks the undo button
+     * @param view undo button
+     */
     public void onClickUndo(View view) {
         drawView.undo();
     }
 
+    /**
+     * Runs when the user clicks the redo button
+     * @param view redo button
+     */
     public void onClickRedo(View view) {
         drawView.redo();
     }
 
+    /**
+     * Saves a file to external storage, requesting permission when necessary
+     * @return true if the image was saved successfully, false otherwise
+     */
     private boolean saveToFile() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -131,10 +170,18 @@ public class DrawActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks whether or not the external storage is writable (ex. full SD card)
+     * @return true if the external storage is writable, false otherwise
+     */
     private boolean isExternalStorageWritable() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 
+    /**
+     * Runs when the user selects a color
+     * @param view which color ImageView was clicked
+     */
     public void onColorClicked(View view) {
         String color = view.getTag().toString();
 
@@ -178,6 +225,9 @@ public class DrawActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * AsyncTask which saves images to external storage in the background to reduce UI lag
+     */
     private class SaveImageAsyncTask extends AsyncTask<DrawView, Void, Boolean> {
         @Override
         protected Boolean doInBackground(DrawView... drawViews) {
@@ -188,11 +238,37 @@ public class DrawActivity extends AppCompatActivity {
         protected void onPostExecute(Boolean isSuccessful) {
             super.onPostExecute(isSuccessful);
             if (isSuccessful) {
-                Toast.makeText(DrawActivity.this, "Successfully saved file", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DrawActivity.this, getResources().getString(R.string.file_save_success), Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(DrawActivity.this, getResources().getString(R.string.file_save_error), Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+    /**
+     * AsyncTask which saves images to internal storage in the background to reduce UI lag
+     */
+    private class SaveLastImageAsyncTask extends AsyncTask<DrawView, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(DrawView... drawViews) {
+            return drawViews[0].saveLastImage();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isSuccessful) {
+            super.onPostExecute(isSuccessful);
+            if (!isSuccessful) {
+                Toast.makeText(DrawActivity.this, getResources().getString(R.string.file_save_error), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * Runs when the user responds to a request for permission (API 23 and up)
+     * @param requestCode which permission request this is
+     * @param permissions permission(s) being requested
+     * @param grantResults whether or not the permission(s) were granted
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -207,9 +283,13 @@ public class DrawActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Saves the current image to be the most recent image
+     */
     @Override
     protected void onStop() {
-        drawView.saveLastImage();
+        SaveLastImageAsyncTask saveLastImageAsyncTask = new SaveLastImageAsyncTask();
+        saveLastImageAsyncTask.execute(drawView);
         super.onStop();
     }
 }

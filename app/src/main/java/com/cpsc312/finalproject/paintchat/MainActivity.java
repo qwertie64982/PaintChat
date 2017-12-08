@@ -5,6 +5,7 @@ package com.cpsc312.finalproject.paintchat;
         import android.content.DialogInterface;
         import android.content.Intent;
         import android.content.pm.PackageManager;
+        import android.database.Cursor;
         import android.net.Uri;
         import android.os.AsyncTask;
         import android.os.Environment;
@@ -27,57 +28,72 @@ package com.cpsc312.finalproject.paintchat;
 public class MainActivity extends AppCompatActivity {
 
     static final String TAG = "MainActivity";
+    String mCurrentPhotoPath;
+
+    // ID numbers
     static final int EXTERNAL_STORAGE_READ_CODE = 0;
     static final int CAMERA_CODE = 1;
     static final int REQUEST_CAMERA = 2;
+    static final int REQUEST_GALLERY = 3;
 
+    // Mode numbers
     private static final int MODE_BLANK = 0;
     private static final int MODE_LAST = 1;
     private static final int MODE_EXTERNAL = 2;
     private static final int MODE_CAMERA = 3;
 
-    String mCurrentPhotoPath;
-
-    //TODO: Make Buttons Prettier
-    /*  TODO: Wire buttons -
-        resumeImageButton
-        newPhotoButton
-        existingPhotoButton
+    /**
+     * onCreate
+     * @param savedInstanceState savedInstanceState Bundle (unused)
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // reference buttons
-        Button blankImageButton = (Button) findViewById(R.id.startNewImageButton);
-        Button resumeImageButton = (Button) findViewById(R.id.resumeLastImageButton);
-        Button newPhotoButton = (Button) findViewById(R.id.takeNewPhotoButton);
-        Button existingPhotoButton = (Button) findViewById(R.id.useExistingPhotoButton);
+        Button startNewDrawingButton = (Button) findViewById(R.id.startNewDrawingButton);
+        Button resumeLastDrawingButton = (Button) findViewById(R.id.resumeLastDrawingButton);
+        Button takeNewPhotoButton = (Button) findViewById(R.id.takeNewPhotoButton);
+        Button useExistingPhotoButton = (Button) findViewById(R.id.useExistingPhotoButton);
 
-        // wire onClickListeners
-        blankImageButton.setOnClickListener(new View.OnClickListener() {
+        startNewDrawingButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * OnClickListener for "start new drawing" Button
+             * @param view "start new drawing" Button
+             */
             @Override
             public void onClick(View view) {
-                onStartNewImageClicked();
+                onStartNewDrawingClicked();
             }
         });
 
-        resumeImageButton.setOnClickListener(new View.OnClickListener() {
+        resumeLastDrawingButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * OnClickListener for "resume last drawing" Button
+             * @param view "resume last drawing" Button
+             */
             @Override
             public void onClick(View view) {
-                onResumeLastPhotoClicked();
+                onResumeLastDrawingClicked();
             }
         });
 
-        newPhotoButton.setOnClickListener(new View.OnClickListener() {
+        takeNewPhotoButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * OnClickListener for "take new photo" Button
+             * @param view "take new photo" Button
+             */
             @Override
             public void onClick(View view) {
                 onTakeNewPhotoClicked();
             }
         });
 
-        existingPhotoButton.setOnClickListener(new View.OnClickListener() {
+        useExistingPhotoButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * OnClickListener for "use existing photo" Button
+             * @param view "use existing photo" Button
+             */
             @Override
             public void onClick(View view) {
                 onExternalPhotoClicked();
@@ -85,7 +101,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void onStartNewImageClicked() {
+    /**
+     * Runs when the "start new drawing" Button is clicked
+     * Warns the user about overwriting their previous unsaved drawing,
+     *     then starts DrawActivity with a blank canvas
+     */
+    public void onStartNewDrawingClicked() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle(R.string.new_image_alert_title)
                 .setMessage(R.string.new_image_alert_body)
@@ -102,6 +123,29 @@ public class MainActivity extends AppCompatActivity {
         newImageDialog.show();
     }
 
+    /**
+     * Runs when the "resume last drawing" Button is clicked
+     * Starts DrawActivity if a previous drawing exists, with this image as the canvas
+     */
+    private void onResumeLastDrawingClicked() {
+        File file = new File(getFilesDir(), getResources().getString(R.string.last_image_filename));
+        if (file.exists()) {
+            String lastPath = file.getAbsolutePath();
+            Intent intent = new Intent(MainActivity.this, DrawActivity.class);
+            intent.putExtra("mode", MODE_LAST);
+            intent.putExtra("file_path", lastPath);
+            startActivity(intent);
+        } else {
+            Toast.makeText(MainActivity.this, getString(R.string.file_load_error), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Runs when the "take new photo" Button is clicked
+     * Warns the user about overwriting their previous unsaved drawing,
+     *     then starts the camera, requesting permission as needed.
+     * If the camera returns with a picture, then DrawActivity is started with this image as its canvas.
+     */
     public void onTakeNewPhotoClicked() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
@@ -139,6 +183,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Runs when the "use existing photo" Button is clicked
+     * Warns the user about overwriting their previous unsaved drawing,
+     *     then starts the photo picker with an Intent, requesting permission as needed
+     * If the user returns with a picture, then DrawActivity is started with this image as its canvas.
+     */
     public void onExternalPhotoClicked() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{
@@ -147,14 +197,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // permission granted by this point
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            builder.setTitle(R.string.new_image_alert_title)
+            builder.setTitle(R.string.existing_photo_alert_title)
                     .setMessage(R.string.new_image_alert_body)
                     .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Intent intent = new Intent(MainActivity.this, DrawActivity.class);
-                            intent.putExtra("mode", MODE_EXTERNAL);
-                            startActivity(intent);
+                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(galleryIntent, REQUEST_GALLERY);
                         }
                     })
                     .setNegativeButton(R.string.no, null);
@@ -163,6 +212,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Runs when the user responds to a request for permission (API 23 and up)
+     * @param requestCode which permission request this is
+     * @param permissions permission(s) being requested
+     * @param grantResults whether or not the permission(s) were granted
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -184,28 +239,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void onResumeLastPhotoClicked() {
-        File file = new File(getFilesDir(), getResources().getString(R.string.last_image_filename));
-        if (file.exists()) {
-            String lastPath = file.getAbsolutePath();
-            Intent intent = new Intent(MainActivity.this, DrawActivity.class);
-            intent.putExtra("mode", MODE_LAST);
-            intent.putExtra("file_path", lastPath);
-            startActivity(intent);
-        } else {
-            Toast.makeText(MainActivity.this, getString(R.string.file_load_error), Toast.LENGTH_SHORT).show();
-        }
-    }
-
+    /**
+     * Creates an image file from what the camera returns,
+     *     which is then moved into the DrawView
+     * @return the image
+     * @throws IOException if the file could not be created (ex. full SD card)
+     */
     private File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_NEW_PHOTO";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
+                imageFileName, // prefix
+                ".jpg",        // suffix
+                storageDir     // directory
         );
 
         // Save a file: path for use with ACTION_VIEW intents
@@ -213,23 +261,39 @@ public class MainActivity extends AppCompatActivity {
         return image;
     }
 
+    /**
+     * Runs when the camera or gallery return with an image (or not)
+     * @param requestCode which request started the Activity
+     * @param resultCode whether or not they finished successfully
+     * @param data data they send back
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == AppCompatActivity.RESULT_OK){
             if (requestCode == REQUEST_CAMERA){
+                Log.d(TAG, "onActivityResult: mode = " + MODE_CAMERA);
                 Intent intent = new Intent(MainActivity.this, DrawActivity.class);
                 intent.putExtra("mode", MODE_CAMERA);
                 intent.putExtra("file_path", mCurrentPhotoPath);
                 startActivity(intent);
             }
+            else if (requestCode == REQUEST_GALLERY && data != null){
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String imgString = cursor.getString(columnIndex);
+                cursor.close();
+
+                Intent intent = new Intent(MainActivity.this, DrawActivity.class);
+                intent.putExtra("mode", MODE_EXTERNAL);
+                intent.putExtra("file_path", imgString);
+                startActivity(intent);
+            }
         }
     }
-
-//    private class CameraAsyncTask extends AsyncTask<Void, Void, Void> {
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            return null;
-//        }
-//    }
 }
