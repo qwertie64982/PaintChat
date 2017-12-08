@@ -54,6 +54,12 @@ public class MainActivity extends AppCompatActivity {
                 onTakeNewPhotoClicked();
             }
         });
+        resumeImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onResumeLastPhotoClicked();
+            }
+        });
     }
 
 
@@ -115,6 +121,19 @@ public class MainActivity extends AppCompatActivity {
         newPhotoDialog.show();
     }
 
+    private void onResumeLastPhotoClicked(){
+        File file = new File(getFilesDir(), getResources().getString(R.string.last_image_filename));
+        String lastPath = file.getAbsolutePath();
+        Intent intent = new Intent(MainActivity.this, DrawActivity.class);
+        intent.putExtra("mode", 1);
+        intent.putExtra("file_path", lastPath);
+        startActivity(intent);
+    }
+
+    private void onExistingPhotoClicked(){
+
+    }
+
 
 
     private File createImageFile() throws IOException {
@@ -139,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == AppCompatActivity.RESULT_OK){
             if (requestCode == REQUEST_CAMERA){
                 Intent intent = new Intent(MainActivity.this, DrawActivity.class);
-                intent.putExtra("mode", 3);
+                intent.putExtra("mode", 2);
                 intent.putExtra("file_path", mCurrentPhotoPath);
                 startActivity(intent);
             }
