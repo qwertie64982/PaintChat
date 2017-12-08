@@ -12,6 +12,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,7 +25,8 @@ import java.io.File;
 
 public class DrawActivity extends AppCompatActivity {
 
-    private static final int EXTERNAL_STORAGE_REQUEST_CODE = 1;
+    private static final String TAG = "DrawActivity";
+    private static final int EXTERNAL_STORAGE_WRITE_CODE = 1;
 
     private DrawView drawView;
 
@@ -39,7 +41,10 @@ public class DrawActivity extends AppCompatActivity {
             public void run() {
                 int height = drawView.getHeight();
                 int width = drawView.getWidth();
-                drawView.init(height, width);
+                int mode = getIntent().getIntExtra("mode", 0);
+                String path = getIntent().getStringExtra("file_path");
+//                Log.d(TAG, "run: " + mode);
+                drawView.init(height, width, mode, path);
             }
         });
 
@@ -116,7 +121,7 @@ public class DrawActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, new String[]{
                     Manifest.permission.READ_EXTERNAL_STORAGE,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
-            }, EXTERNAL_STORAGE_REQUEST_CODE);
+            }, EXTERNAL_STORAGE_WRITE_CODE);
             return false;
         } else {
             // permissions granted by this point
@@ -191,7 +196,7 @@ public class DrawActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == EXTERNAL_STORAGE_REQUEST_CODE) {
+        if (requestCode == EXTERNAL_STORAGE_WRITE_CODE) {
             if (grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 saveToFile();
@@ -200,5 +205,11 @@ public class DrawActivity extends AppCompatActivity {
                 Toast.makeText(this, getResources().getString(R.string.no_save_permissions), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    @Override
+    protected void onStop() {
+        drawView.saveLastImage();
+        super.onStop();
     }
 }

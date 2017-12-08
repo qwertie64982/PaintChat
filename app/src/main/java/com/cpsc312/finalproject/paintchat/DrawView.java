@@ -2,6 +2,7 @@ package com.cpsc312.finalproject.paintchat;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -34,8 +35,15 @@ public class DrawView extends AppCompatImageView {
     private  final int DEFAULT_BG_COLOR = getResources().getColor(R.color.white);
     private static final float TOUCH_TOLERANCE = 4;
 
+    private static final int MODE_BLANK = 0;
+    private static final int MODE_LAST = 1;
+    private static final int MODE_EXTERNAL = 2;
+    private static final int MODE_CAMERA = 3;
+
+    private int mode;
     private Paint paint;
     private Bitmap bitmap;
+    private Bitmap imageBitmap;
     private Canvas canvas;
     private Paint bitmapPaint = new Paint(Paint.DITHER_FLAG);
     private ArrayList<FingerPath> paths = new ArrayList<>(); // list of FingerPaths the user made
@@ -66,9 +74,15 @@ public class DrawView extends AppCompatImageView {
         paint.setAlpha(0xff); // the alpha channel for all colors should be 100% (not transparent)
     }
 
-    public void init(int height, int width) {
+    public void init(int height, int width, int mode, String path) {
+        this.mode = mode;
         bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888); // each pixel stored in 4B
         canvas = new Canvas(bitmap);
+        if (mode == MODE_EXTERNAL || mode == MODE_CAMERA || mode == MODE_LAST) {
+//            imageBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.rainbow), width, height, false); // debug only
+            imageBitmap = Bitmap.createScaledBitmap(BitmapFactory.decodeFile(path), width, height, false);
+            canvas.drawBitmap(imageBitmap, 0, 0, null);
+        }
 
         currentColor = DEFAULT_COLOR;
         strokeWidth = brushSize;
@@ -77,8 +91,12 @@ public class DrawView extends AppCompatImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         canvas.save(); // save where the other paths previously were
-        this.canvas.drawColor(backgroundColor); // overwrite everything with the background
-        // TODO: Draw the background image here?
+//        Log.d(TAG, "onDraw: " + mode);
+        if (mode == MODE_BLANK) {
+            this.canvas.drawColor(backgroundColor); // overwrite everything with the background
+        } else {
+            this.canvas.drawBitmap(imageBitmap, 0, 0, null);
+        }
 
         for (FingerPath fingerPath : paths) { // iterate and draw the new paths
             paint.setColor(fingerPath.color);

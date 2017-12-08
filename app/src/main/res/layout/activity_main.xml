@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:rowCount="2"
+    app:columnCount="2"
+    tools:context="com.cpsc312.finalproject.paintchat.MainActivity">
+
+
+    <Button
+        android:id="@+id/startNewImageButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:text="@string/new_image_button"
+        app:layout_row="0"
+        app:layout_column="0"
+        app:layout_rowWeight="1"
+        app:layout_columnWeight="1"
+        app:layout_gravity="fill" />
+
+    <Button
+        android:id="@+id/resumeLastImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/resume_image_button"
+        app:layout_row="0"
+        app:layout_column="1"
+        app:layout_rowWeight="1"
+        app:layout_columnWeight="1"
+        app:layout_gravity="fill" />
+
+    <Button
+        android:id="@+id/takeNewPhotoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/new_photo_button"
+        app:layout_row="1"
+        app:layout_column="0"
+        app:layout_rowWeight="1"
+        app:layout_columnWeight="1"
+        app:layout_gravity="fill" />
+
+    <Button
+        android:id="@+id/useExistingPhotoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/existing_photo_button"
+        app:layout_row="1"
+        app:layout_column="1"
+        app:layout_rowWeight="1"
+        app:layout_columnWeight="1"
+        app:layout_gravity="fill" />
+
+</android.support.v7.widget.GridLayout>

@@ -13,6 +13,9 @@
     <!-- Error messages -->
     <string name="cannot_access_external">This app cannot access your external storage</string>
     <string name="no_save_permissions">This app does not have permission to save images</string>
+    <string name="no_load_permission">This app does not have permission to load images</string>
+    <string name="no_camera_permission">This app does not have permission to the camera</string>
+    <string name="file_load_error">Error loading file</string>
     <string name="cannot_undo">Nothing to undo</string>
     <string name="cannot_redo">Nothing to redo</string>
 
@@ -32,4 +35,18 @@
     <string name="undo">undo</string>
     <string name="redo">redo</string>
     <string name="brush_size_slider">brush size slider</string>
+
+    <!-- Misc. Messages -->
+    <string name="toast_saved">Successfully saved file</string>
+    <string name="new_image_alert_title">Create New Blank Image?</string>
+    <string name="new_image_alert_body">Any work not saved on your current image will be lost</string>
+    <string name="new_photo_alert_title">Take Photo To Create New Image?</string>
+
+    <!-- Buttons -->
+    <string name="new_image_button">Start New Drawing</string>
+    <string name="resume_image_button">Resume Last Drawing</string>
+    <string name="new_photo_button">Take New Photo</string>
+    <string name="existing_photo_button">Use Existing Photo</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
 </resources>
