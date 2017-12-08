@@ -1,29 +1,51 @@
+/**
+ * This program runs a paint app, which can import and export images.
+ * Final project, CPSC 312
+ * Icons from Material.io
+ * Would not have been possible without the help from:
+ *   - https://android.jlelse.eu/learn-to-create-a-paint-application-for-android-5b16968063f8
+ *   - Stack Exchange
+ *
+ * @author Maxwell Sherman
+ *   - DrawView
+ *   - Layouts
+ *   - Image saving
+ *   - Slideshow/documentation
+ * @author Andrew Italo
+ *   - Image sharing
+ *   - Main menu logic
+ *   - Using the last image
+ *   - Getting the image inside DrawView
+ * These were merely areas of focus earlier on in development.
+ * A significant portion of the time was spent working together on the same code.
+ *
+ * @version v1.0
+ */
 package com.cpsc312.finalproject.paintchat;
 
-        import android.Manifest;
-        import android.app.AlertDialog;
-        import android.content.DialogInterface;
-        import android.content.Intent;
-        import android.content.pm.PackageManager;
-        import android.database.Cursor;
-        import android.net.Uri;
-        import android.os.AsyncTask;
-        import android.os.Environment;
-        import android.provider.MediaStore;
-        import android.support.annotation.NonNull;
-        import android.support.v4.app.ActivityCompat;
-        import android.support.v4.content.FileProvider;
-        import android.support.v7.app.AppCompatActivity;
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.view.View;
-        import android.widget.Button;
-        import android.widget.Toast;
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
-        import java.io.File;
-        import java.io.IOException;
-        import java.text.SimpleDateFormat;
-        import java.util.Date;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
