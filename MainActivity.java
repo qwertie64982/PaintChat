@@ -1,27 +1,43 @@
 package com.cpsc312.finalproject.paintchat;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+        import android.Manifest;
+        import android.app.AlertDialog;
+        import android.content.DialogInterface;
+        import android.content.Intent;
+        import android.content.pm.PackageManager;
+        import android.database.Cursor;
+        import android.net.Uri;
+        import android.os.AsyncTask;
+        import android.os.Environment;
+        import android.provider.MediaStore;
+        import android.support.annotation.NonNull;
+        import android.support.v4.app.ActivityCompat;
+        import android.support.v4.content.FileProvider;
+        import android.support.v7.app.AppCompatActivity;
+        import android.os.Bundle;
+        import android.util.Log;
+        import android.view.View;
+        import android.widget.Button;
+        import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+        import java.io.File;
+        import java.io.IOException;
+        import java.text.SimpleDateFormat;
+        import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final int REQUEST_CAMERA = 1;
-    static final int REQUEST_GALLERY = 2;
+    static final String TAG = "MainActivity";
+    static final int EXTERNAL_STORAGE_READ_CODE = 0;
+    static final int CAMERA_CODE = 1;
+    static final int REQUEST_CAMERA = 2;
+    static final int REQUEST_GALLERY = 3;
+
+    private static final int MODE_BLANK = 0;
+    private static final int MODE_LAST = 1;
+    private static final int MODE_EXTERNAL = 2;
+    private static final int MODE_CAMERA = 3;
+
     String mCurrentPhotoPath;
 
     //TODO: Make Buttons Prettier
@@ -36,105 +52,151 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // reference buttons
-        Button newImageButton = (Button) findViewById(R.id.startNewImageButton);
+        Button blankImageButton = (Button) findViewById(R.id.startNewImageButton);
         Button resumeImageButton = (Button) findViewById(R.id.resumeLastImageButton);
         Button newPhotoButton = (Button) findViewById(R.id.takeNewPhotoButton);
         Button existingPhotoButton = (Button) findViewById(R.id.useExistingPhotoButton);
 
         // wire onClickListeners
-        newImageButton.setOnClickListener(new View.OnClickListener() {
+        blankImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onStartNewImageClicked();
             }
         });
-        newPhotoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onTakeNewPhotoClicked();
-            }
-        });
+
         resumeImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onResumeLastPhotoClicked();
             }
         });
+
+        newPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onTakeNewPhotoClicked();
+            }
+        });
+
+        existingPhotoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onExternalPhotoClicked();
+            }
+        });
     }
 
-
-
-    public void onStartNewImageClicked(){
+    public void onStartNewImageClicked() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(R.string.newImageAlertTitle)
-                .setMessage(R.string.newImageAlertBody)
+        builder.setTitle(R.string.new_image_alert_title)
+                .setMessage(R.string.new_image_alert_body)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Intent intent = new Intent(MainActivity.this, DrawActivity.class);
-                        intent.putExtra("mode", 0);
+                        intent.putExtra("mode", MODE_BLANK);
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
+                .setNegativeButton(R.string.no, null);
         AlertDialog newImageDialog = builder.create();
         newImageDialog.show();
     }
 
-    public void onTakeNewPhotoClicked(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle(R.string.newPhotoAlertTitle)
-                .setMessage(R.string.newImageAlertBody)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-                            File photoFile = null;
-                            try {
-                                photoFile = createImageFile();
-                            } catch (IOException ex) {
-                                Toast.makeText(MainActivity.this, getString(R.string.file_load_error), Toast.LENGTH_SHORT).show();
-                            }
-                            if (photoFile != null) {
-                                Uri photoURI = FileProvider.getUriForFile(MainActivity.this,
-                                        "com.cpsc312.finalproject.paintchat.fileprovider",
-                                        photoFile);
-                                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                                startActivityForResult(takePictureIntent, REQUEST_CAMERA);
+    public void onTakeNewPhotoClicked() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.CAMERA
+            }, CAMERA_CODE);
+        } else {
+            // permission granted by this point
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle(R.string.new_photo_alert_title)
+                    .setMessage(R.string.new_image_alert_body)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+                                File photoFile = null;
+                                try {
+                                    photoFile = createImageFile();
+                                } catch (IOException ex) {
+                                    Toast.makeText(MainActivity.this, getString(R.string.file_load_error), Toast.LENGTH_SHORT).show();
+                                }
+                                if (photoFile != null) {
+                                    Uri photoURI = FileProvider.getUriForFile(MainActivity.this,
+                                            "com.cpsc312.finalproject.paintchat.fileprovider",
+                                            photoFile);
+                                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                                    startActivityForResult(takePictureIntent, REQUEST_CAMERA);
+                                }
                             }
                         }
-                    }
-                })
-                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-        AlertDialog newPhotoDialog = builder.create();
-        newPhotoDialog.show();
+                    })
+                    .setNegativeButton(R.string.no, null);
+            AlertDialog newPhotoDialog = builder.create();
+            newPhotoDialog.show();
+        }
     }
 
-    private void onResumeLastPhotoClicked(){
+    public void onExternalPhotoClicked() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            }, EXTERNAL_STORAGE_READ_CODE);
+        } else {
+            // permission granted by this point
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle(R.string.existing_photo_alert_title)
+                    .setMessage(R.string.new_image_alert_body)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                            startActivityForResult(galleryIntent, REQUEST_GALLERY);
+                        }
+                    })
+                    .setNegativeButton(R.string.no, null);
+            AlertDialog newImageDialog = builder.create();
+            newImageDialog.show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == EXTERNAL_STORAGE_READ_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onExternalPhotoClicked();
+            } else {
+//                findViewById(R.id.useExistingPhotoButton).setEnabled(false);
+                Toast.makeText(this, getResources().getString(R.string.no_load_permission), Toast.LENGTH_SHORT).show();
+            }
+        }
+        if (requestCode == CAMERA_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onTakeNewPhotoClicked();
+            } else {
+//                findViewById(R.id.takeNewPhotoButton).setEnabled(false);
+                Toast.makeText(this, getResources().getString(R.string.no_camera_permission), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void onResumeLastPhotoClicked() {
         File file = new File(getFilesDir(), getResources().getString(R.string.last_image_filename));
-        String lastPath = file.getAbsolutePath();
-        Intent intent = new Intent(MainActivity.this, DrawActivity.class);
-        intent.putExtra("mode", 1);
-        intent.putExtra("file_path", lastPath);
-        startActivity(intent);
+        if (file.exists()) {
+            String lastPath = file.getAbsolutePath();
+            Intent intent = new Intent(MainActivity.this, DrawActivity.class);
+            intent.putExtra("mode", MODE_LAST);
+            intent.putExtra("file_path", lastPath);
+            startActivity(intent);
+        } else {
+            Toast.makeText(MainActivity.this, getString(R.string.file_load_error), Toast.LENGTH_SHORT).show();
+        }
     }
-
-    private void onExistingPhotoClicked(){
-
-    }
-
-
 
     private File createImageFile() throws IOException {
         // Create an image file name
@@ -157,14 +219,35 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == AppCompatActivity.RESULT_OK){
             if (requestCode == REQUEST_CAMERA){
+                Log.d(TAG, "onActivityResult: mode = " + MODE_CAMERA);
                 Intent intent = new Intent(MainActivity.this, DrawActivity.class);
-                intent.putExtra("mode", 2);
+                intent.putExtra("mode", MODE_CAMERA);
                 intent.putExtra("file_path", mCurrentPhotoPath);
+                startActivity(intent);
+            }
+            else if (requestCode == REQUEST_GALLERY && data != null){
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String imgString = cursor.getString(columnIndex);
+                cursor.close();
+
+                Intent intent = new Intent(MainActivity.this, DrawActivity.class);
+                intent.putExtra("mode", MODE_EXTERNAL);
+                intent.putExtra("file_path", imgString);
                 startActivity(intent);
             }
         }
     }
+
+//    private class CameraAsyncTask extends AsyncTask<Void, Void, Void> {
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            return null;
+//        }
+//    }
 }
-
-
-
